@@ -49,5 +49,9 @@ public class UI {
 		}
 		System.out.print(" ");
 	}
+	
+	public static void clearScreen() {
+		System.out.flush();
+	}
 
 }
