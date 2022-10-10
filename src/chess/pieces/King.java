@@ -6,8 +6,8 @@ import chess.Color;
 
 public class King extends ChessPiece{
 
-	public King(Board borad, Color color) {
-		super(borad, color);
+	public King(Board board, Color color) {
+		super(board, color);
 	}
 
 	@Override
