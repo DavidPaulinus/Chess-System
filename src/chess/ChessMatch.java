@@ -15,7 +15,7 @@ public class ChessMatch {
 	}
 
 	public ChessPiece[][] getPieces() {
-		ChessPiece[][] matriz = new ChessPiece[board.getRows()][board.getColumns()];
+		ChessPiece[][] matriz = new ChessPiece[board.getColumns()][board.getRows()];
 		for (int i = 0; i < board.getRows(); i++) {
 			for (int j = 0; j < board.getColumns(); j++) {
 				matriz[i][j] = (ChessPiece) board.piece(i, j);
@@ -44,6 +44,9 @@ public class ChessMatch {
 		if (!board.thereIsAPiece(source)) {
 			throw new ChessException("There is no piece on source position.");
 		}
+		if (!board.piece(source).isThereAnyPossibleMove()) {
+			throw new ChessException("There is no possible moves for the chosen piece.");
+		}
 	}
 
 	private void placeNewPiece(Character column, Integer row, ChessPiece piece) {
@@ -52,7 +55,7 @@ public class ChessMatch {
 
 	private void initialSetup() {
 		placeNewPiece('e', 1, new King(board, Color.WHITE));
-		placeNewPiece('a', 1, new Rook(board, Color.WHITE));
+		placeNewPiece('e', 2, new Rook(board, Color.WHITE));
 		placeNewPiece('h', 1, new Rook(board, Color.WHITE));
 
 		placeNewPiece('e', 8, new King(board, Color.BLACK));
