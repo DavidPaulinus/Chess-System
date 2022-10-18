@@ -102,7 +102,7 @@ public class King extends ChessPiece {
 
 			}
 
-			//left side
+			// left side
 			Position positionRook2 = new Position(position.getRow(), position.getColumn() - 4);
 			if (testRookCastling(positionRook2)) {
 				Position p1 = new Position(position.getRow(), position.getColumn() - 1);

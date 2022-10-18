@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.management.openmbean.InvalidOpenTypeException;
-
 import boardGame.Board;
 import boardGame.Piece;
 import boardGame.Position;
@@ -226,30 +224,31 @@ public class ChessMatch {
 		if (promoted == null) {
 			throw new IllegalStateException("There is no pice to be promoted.");
 		}
-		if (!type.equalsIgnoreCase("q") && !type.equalsIgnoreCase("r") && !type.equalsIgnoreCase("n")
-				&& !type.equalsIgnoreCase("b")) {
-
-			throw new InvalidOpenTypeException("Invalid type for promotion.");
+		if (!type.equals("q") && !type.equals("r") && !type.equals("n") && !type.equals("b")) {
+			return promoted;
 		}
-		
+
 		Position pos = promoted.getChessPosition().toPosition();
-		Piece p= board.removePiece(pos);
+		Piece p = board.removePiece(pos);
 		piecesOnTheBoard.remove(p);
-		
-		ChessPiece newPiece = newPiece(type,promoted.getColor());
+
+		ChessPiece newPiece = newPiece(type, promoted.getColor());
 		board.placePiece(newPiece, pos);
 		piecesOnTheBoard.add(newPiece);
-		
+
 		return newPiece;
 
 	}
-	
+
 	private ChessPiece newPiece(String type, Color color) {
-		if(type.toUpperCase().equals("Q")) return new Queen(board,color);
-		if(type.toUpperCase().equals("B")) return new Bishop(board,color);
-		if(type.toUpperCase().equals("K")) return new Knight(board,color);
-		return new Rook(board,color);
-			
+		if (type.equals("Q"))
+			return new Queen(board, color);
+		if (type.equals("B"))
+			return new Bishop(board, color);
+		if (type.equals("K"))
+			return new Knight(board, color);
+		return new Rook(board, color);
+
 	}
 
 	private void validateSourcePosition(Position source) {
