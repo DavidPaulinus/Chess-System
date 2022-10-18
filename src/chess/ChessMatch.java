@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.management.openmbean.InvalidOpenTypeException;
+
 import boardGame.Board;
 import boardGame.Piece;
 import boardGame.Position;
@@ -18,6 +20,7 @@ public class ChessMatch {
 	private Board board;
 	private Color currentPlayer;
 	private ChessPiece enPassantVulnerable;
+	private ChessPiece promoted;
 	private int turn;
 	private boolean Check = false;
 	private boolean CheckMate = false;
@@ -42,6 +45,10 @@ public class ChessMatch {
 
 	public ChessPiece getEnPassantVulnerable() {
 		return enPassantVulnerable;
+	}
+
+	public ChessPiece getPromoted() {
+		return promoted;
 	}
 
 	public boolean getCheck() {
@@ -83,6 +90,18 @@ public class ChessMatch {
 		}
 
 		ChessPiece movedPice = (ChessPiece) board.piece(target);
+
+		// promotion
+		promoted = null;
+
+		if (movedPice instanceof Pawn) {
+			if (movedPice.getColor() == Color.WHITE && target.getRow() == 0
+					|| movedPice.getColor() == Color.BLACK && target.getRow() == 7) {
+				promoted = (ChessPiece) board.piece(target);
+
+				promoted = replacePromotedPiece("Q");
+			}
+		}
 
 		Check = (testCheck(opponent(currentPlayer))) ? true : false;
 
@@ -187,20 +206,50 @@ public class ChessMatch {
 		// enPassant right
 		if (p instanceof Pawn) {
 			if (source.getColumn() != target.getColumn() && capturedPiece == enPassantVulnerable) {
-				
-				ChessPiece pawn=(ChessPiece)board.removePiece(target);
-				
+
+				ChessPiece pawn = (ChessPiece) board.removePiece(target);
+
 				Position pawnP;
 				if (p.getColor() == Color.WHITE) {
 					pawnP = new Position(3, target.getColumn());
 				} else {
 					pawnP = new Position(4, target.getColumn());
 				}
-				
+
 				board.placePiece(pawn, pawnP);
 			}
 		}
 
+	}
+
+	public ChessPiece replacePromotedPiece(String type) {
+		if (promoted == null) {
+			throw new IllegalStateException("There is no pice to be promoted.");
+		}
+		if (!type.equalsIgnoreCase("q") && !type.equalsIgnoreCase("r") && !type.equalsIgnoreCase("n")
+				&& !type.equalsIgnoreCase("b")) {
+
+			throw new InvalidOpenTypeException("Invalid type for promotion.");
+		}
+		
+		Position pos = promoted.getChessPosition().toPosition();
+		Piece p= board.removePiece(pos);
+		piecesOnTheBoard.remove(p);
+		
+		ChessPiece newPiece = newPiece(type,promoted.getColor());
+		board.placePiece(newPiece, pos);
+		piecesOnTheBoard.add(newPiece);
+		
+		return newPiece;
+
+	}
+	
+	private ChessPiece newPiece(String type, Color color) {
+		if(type.toUpperCase().equals("Q")) return new Queen(board,color);
+		if(type.toUpperCase().equals("B")) return new Bishop(board,color);
+		if(type.toUpperCase().equals("K")) return new Knight(board,color);
+		return new Rook(board,color);
+			
 	}
 
 	private void validateSourcePosition(Position source) {
